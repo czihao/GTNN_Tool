@@ -1,4 +1,3 @@
-from re import S
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QLineEdit, QComboBox, QLabel, QMessageBox, QInputDialog, QSlider
@@ -16,7 +15,6 @@ from scipy.sparse import csr_matrix, vstack, block_diag, coo_matrix
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas, NavigationToolbar2QT as NavigationToolbar
 
 import gtnn_functions as gtnn
-import gtnn_config
 from gtnn_config import arg_list
 
 

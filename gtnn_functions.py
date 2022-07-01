@@ -1,27 +1,11 @@
-from random import random
-from re import A
-import re
-from tkinter import *
-from tkinter import ttk
-from time import time
-import time
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
-from numpy import indices
-from numpy import block
-from numpy import full
-from numpy import arange
-from pyparsing import And
-from pytools import one
 import numpy.matlib as matlab
-from IPython import display
-import math
-
 
 # from gtnn import MATRIX_SIZE
 #import GTNNLearning
-from pycuda import driver, compiler, gpuarray, tools
+# from pycuda import driver, compiler, gpuarray, tools
 from scipy.sparse import csr_matrix, vstack, block_diag, coo_matrix
 from gtnn_config import arg_list
 
