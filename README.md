@@ -1,4 +1,4 @@
 # GTNN_Tool
 ## INSTALLATION
-Run installation script **install.sh** in the cloned repository
-`./install.sh`
+Line 1 Run installation script **install.sh** in the cloned repository
+Line 2 `./install.sh`
