@@ -1,3 +1,4 @@
+from re import S
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QLineEdit, QComboBox, QLabel, QMessageBox, QInputDialog, QSlider
@@ -15,6 +16,7 @@ from scipy.sparse import csr_matrix, vstack, block_diag, coo_matrix
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas, NavigationToolbar2QT as NavigationToolbar
 
 import gtnn_functions as gtnn
+import gtnn_config
 from gtnn_config import arg_list
 
 
@@ -66,10 +68,6 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.config_Q_layout = QtWidgets.QHBoxLayout()
         self.config_connectivity_layout = QtWidgets.QGridLayout()
         self.Qplot_layout = QtWidgets.QGridLayout()
-
-
-        
-
 
         # self.FRAME_A.setLayout(self.LAYOUT_A)
         # self.setCentralWidget(self.FRAME_A)
@@ -155,10 +153,10 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.config_param_layout.addWidget(self._param_tmax, 7, 1)
         self.config_param_layout.addWidget(self._param_numneuron, 1, 2)
         self.config_param_layout.addWidget(self._param_eta, 3, 2)
+        self.config_param_layout.addWidget(self._param_vth, 5, 2)
         
         self.config_param_layout.addWidget(self._param_c, 7, 2)
         self.config_param_layout.addWidget(self._param_lambda, 1, 3)
-        self.config_param_layout.addWidget(self._param_vth, 3, 3)
 
         self.config_param_layout.addWidget(self._label_param_dt, 0, 1)
         self.config_param_layout.addWidget(self._label_param_tau, 2, 1)
@@ -257,15 +255,20 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         ###############################################################################################################
         #                                                 Vplot Layout                                                #
         ###############################################################################################################
-        self.vplot1 = CustomFigCanvas()
+        self.vplot1 = CustomFigCanvas('potential')
+        self.vplot_layout.setColumnStretch(0, 1)
+        self.vplot_layout.setColumnStretch(1, 4)
+        self.vplot_layout.setColumnStretch(2, 3)
+
         self.vplot_layout.addWidget(self.vplot1, 0, 1)
-        self.vplot2 = CustomFigCanvas()
+        # self.vplot_layout.setSpacing(2)
+        self.vplot2 = CustomFigCanvas('potential')
         self.vplot_layout.addWidget(self.vplot2, 1, 1)
-        self.vplot3 = CustomFigCanvas()
+        self.vplot3 = CustomFigCanvas('potential')
         self.vplot_layout.addWidget(self.vplot3, 2, 1)
-        self.vplot4 = CustomFigCanvas()
+        self.vplot4 = CustomFigCanvas('potential')
         self.vplot_layout.addWidget(self.vplot4, 3, 1)
-        self.vplot5 = CustomFigCanvas()
+        self.vplot5 = CustomFigCanvas('potential')
         self.vplot_layout.addWidget(self.vplot5, 4, 1)
 
         self.vplot_1 = QLineEdit(self)
@@ -283,12 +286,21 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.vplot_5 = QLineEdit(self)
         self.vplot_5.setText("4")
         self.vplot_5.returnPressed.connect(self.update_neuron)
-
+        
         self.vplot_layout.addWidget(self.vplot_1, 0, 0)
         self.vplot_layout.addWidget(self.vplot_2, 1, 0)
         self.vplot_layout.addWidget(self.vplot_3, 2, 0)
         self.vplot_layout.addWidget(self.vplot_4, 3, 0)
         self.vplot_layout.addWidget(self.vplot_5, 4, 0)
+
+        self.energy_plot = CustomFigCanvas('power', 'power consumption')
+        self.vplot_layout.addWidget(self.energy_plot, 0, 2, 3, 1)
+
+        self.info_box = QLineEdit()
+        self.info_box.setFixedSize(400, 200)
+        self.info_box.setReadOnly(True)
+        self.vplot_layout.addWidget(self.info_box, 3, 2, 2, 1)
+
 
         ###############################################################################################################
         #                                          Connectivity Layout                                                #
@@ -582,11 +594,14 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         mode = self.updateMode
         Psip = np.zeros((arg_list['NUM_NEURON'], 1)).astype(np.float16)
         Psin = np.zeros((arg_list['NUM_NEURON'], 1)).astype(np.float16)
+        M_col = np.linspace(0, arg_list['NUM_NEURON'], arg_list['NUM_NEURON'], endpoint=False).astype(np.uint)
+        M_row = M_col
+        M_data = np.ones((arg_list['NUM_NEURON']), dtype=np.uint)
+        M = coo_matrix((M_data, (M_row, M_col)))
+        energy_window = []
 
         vp, vn = gtnn.generateV('rand')
         iter = 0
-
-        
 
         while True:
             probe_1 = int(self.vplot_1.text())
@@ -599,6 +614,20 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.vplot3.addData(vp[probe_3] + Psip[probe_3])
             self.vplot4.addData(vp[probe_4] + Psip[probe_4])
             self.vplot5.addData(vp[probe_5] + Psip[probe_5])
+
+            if iter < 1000:
+                e_temp = 0.5*vp*vp - (I - (Q*M)@(vp-vn))*vp + Psip*vp + \
+                         0.5*vn*vn + (I - (Q*M)@(vp-vn))*vn + Psin*vn
+                # energy_window[iter] = np.sum(e_temp)/arg_list['NUM_NEURON']
+                energy_window.append(np.sum(e_temp)/arg_list['NUM_NEURON'])
+            else:
+                e_temp = 0.5*vp*vp - (I - (Q*M)@(vp-vn))*vp + Psip*vp + \
+                         0.5*vn*vn + (I - (Q*M)@(vp-vn))*vn + Psin*vn
+                # energy_window[iter%1000] = np.sum(e_temp)/arg_list['NUM_NEURON']
+                # self.energy_plot.addData(np.sum(energy_window)/100)
+                energy_window.pop(0)
+                energy_window.append(np.sum(e_temp)/arg_list['NUM_NEURON'])
+                self.energy_plot.addData(sum(energy_window)/100)
 
             time.sleep(0.1/(self.speed + 1))
 
@@ -739,7 +768,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
 
 
 class CustomFigCanvas(FigureCanvas, TimedAnimation):
-    def __init__(self):
+    def __init__(self, ylabel='', title=''):
         self.addedData = []
         # print('Matplotlib Version:', matplotlib.__version__)
 
@@ -754,7 +783,7 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         # b.append(4.0)
         # b.append(3.0)
         # b.append(4.0)
-        self.y = (self.n * 0.0) + 0.5
+        self.y = (self.n * 0.0)
 
         # The window
         self.fig = Figure(figsize=(8, 8), dpi=100)
@@ -762,7 +791,8 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
 
         # self.ax1 settings
         self.ax1.set_xlabel('time')
-        self.ax1.set_ylabel('raw data')
+        self.ax1.set_ylabel(ylabel)
+        self.ax1.set_title(title)
         self.line1 = Line2D([], [], color='blue')
         self.line1_tail = Line2D([], [], color='red', linewidth=2)
         self.line1_head = Line2D([], [], color='red', marker='o', markeredgecolor='r')
