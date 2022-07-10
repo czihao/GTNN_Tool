@@ -1,7 +1,7 @@
 from re import S
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QLineEdit, QComboBox, QLabel, QMessageBox, QInputDialog, QSlider
+from PyQt5.QtWidgets import QLineEdit, QComboBox, QLabel, QPlainTextEdit, QInputDialog, QSlider
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
@@ -296,9 +296,16 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.energy_plot = CustomFigCanvas('power', 'power consumption')
         self.vplot_layout.addWidget(self.energy_plot, 0, 2, 3, 1)
 
-        self.info_box = QLineEdit()
+        self.info_box = QPlainTextEdit()
         self.info_box.setFixedSize(400, 200)
         self.info_box.setReadOnly(True)
+
+        if np.char.equal(self.updateMode, 'routing'):
+            self.info_box.setPlainText("Mode: %s \nsecond line %d" %(self.updateMode, 10))
+        elif np.char.equal(self.updateMode, 'combinatorial'):
+            self.info_box.setPlainText("Mode: %s \n# cut: %d, iteration: %d" %(self.updateMode, 0, 0))
+        elif np.char.equal(self.updateMode, 'normal'):
+            self.info_box.setPlainText("Mode: %s \nsecond line" %(self.updateMode))
         self.vplot_layout.addWidget(self.info_box, 3, 2, 2, 1)
 
 
@@ -503,6 +510,12 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         arg_list['VTH'] = float(self._param_vth.text())
         arg_list['C'] = float(self._param_c.text())
         self.updateMode = self._dropdown_updateMode.currentText()
+        if np.char.equal(self.updateMode, 'routing'):
+            self.info_box.setPlainText("Mode: %s \nsecond line %d" %(self.updateMode, 10))
+        elif np.char.equal(self.updateMode, 'combinatorial'):
+            self.info_box.setPlainText("Mode: %s \n# cut: %d, iteration: %d" %(self.updateMode, 0, 0))
+        elif np.char.equal(self.updateMode, 'normal'):
+            self.info_box.setPlainText("Mode: %s \nsecond line" %(self.updateMode))
         # self.myDataLoop = threading.Thread(name='myDataLoop', target=dataSendLoop, daemon=True, args=([self.addData_callbackFunc]))
         # self.myDataLoop.start()
     # def init_Q(self):
@@ -738,9 +751,12 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                 vp[vp > arg_list['VTH']] = arg_list['VTH']
                 vn[vn > arg_list['VTH']] = arg_list['VTH']
 
+                #TODO NEED DEBUG
                 if iter %10000 == 0:
                     num_maxcut, num_converged = gtnn.max_cut(Q.toarray(), vp-vn)
-                    print("max cut: %d, number converged: %d" %(num_maxcut, num_converged))
+                    if np.char.equal(self.updateMode, 'combinatorial'):
+                        self.info_box.setPlainText("Mode: %s \n #iteration:%d\n# cut: %d, num converged: %d" %(self.updateMode, iter, num_maxcut, num_converged))
+                    # print("max cut: %d, number converged: %d" %(num_maxcut, num_converged))
                 # time.sleep(0.1)
             elif np.char.equal(mode, 'normal'):
 
