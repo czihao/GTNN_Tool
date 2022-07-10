@@ -614,7 +614,10 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         energy_window = []
 
         vp, vn = gtnn.generateV('rand')
+        if np.char.equal(mode, 'combinatorial'):
+            tau = arg_list['DT']/(10 * np.random.rand(arg_list['NUM_NEURON'], 1) + 0.001);
         iter = 0
+        self.cos_rule = 0
 
         while True:
             probe_1 = int(self.vplot_1.text())
@@ -628,9 +631,12 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             self.vplot4.addData(vp[probe_4] + Psip[probe_4])
             self.vplot5.addData(vp[probe_5] + Psip[probe_5])
 
+            if iter > 300/arg_list['DT']:
+                self.cos_rule = 1
+
             if iter < 1000:
-                e_temp = 0.5*vp*vp - (I - (Q*M)@(vp-vn))*vp + Psip*vp + \
-                         0.5*vn*vn + (I - (Q*M)@(vp-vn))*vn + Psin*vn
+                e_temp = 0.5*vp*vp - (I - (Q*M)@(vp-vn))*vp + Psip + \
+                         0.5*vn*vn + (I - (Q*M)@(vp-vn))*vn + Psin
                 # energy_window[iter] = np.sum(e_temp)/arg_list['NUM_NEURON']
                 energy_window.append(np.sum(e_temp)/arg_list['NUM_NEURON'])
             else:
@@ -648,11 +654,13 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                 ################################## Compressive sensing & routing
                 # Gp = -I + Q @ (vp-vn) + Psip + np.diag(Q).reshape(vn.shape) * vn
                 # Gn = I - Q @ (vp-vn) + Psin + np.diag(Q).reshape(vp.shape) * vp
-                Gp = vp - I + Q @ (vp-vn) + Psip 
-                Gn = vn + I - Q @ (vp-vn) + Psin 
+                Qv = Q @ (vp-vn)
+                Gp = vp - I + Qv + Psip 
+                Gn = vn + I - Qv + Psin 
                 
-                Psip = np.zeros((arg_list['NUM_NEURON'], 1)).astype(np.float16)
-                Psin = np.zeros((arg_list['NUM_NEURON'], 1)).astype(np.float16)
+                # Reset Spikes
+                Psip[:] = 0
+                Psin[:] = 0
                 
                 vp = vp + (arg_list['DT']/arg_list['TAU']) * ((vp*vp - arg_list['VMAX']**2) * Gp)\
                         / (-vp * Gp + arg_list['LAMBDA'] * arg_list['VMAX'])
@@ -706,15 +714,20 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                 ##### NO RESET ######
                 # Gp = Q @ (vp-vn) + Psip - np.cos(np.pi/2 * (vp-vn)) + Q @ np.cos(np.pi/2 * (vp-vn))
                 # Gn = -Q @ (vp-vn) + Psin + np.cos(np.pi/2 * (vp-vn)) - Q @ np.cos(np.pi/2 * (vp-vn))
-                cos_temp = np.cos(np.pi/2 * (vp-vn))
-                # G_temp = Q @ ((vp-vn) + cos_temp)
-                G_temp = Q @ (vp-vn)
-                
+                vdiff = vp-vn
+                if self.cos_rule == 1:
+                    G_tmp = Q @ (vdiff + np.cos(np.pi/2*vdiff))  -  np.cos(np.pi/2*vdiff)
+                    Gp = G_tmp + Psip 
+                    Gn = -G_tmp + Psin
+                elif self.cos_rule == 0:
+                    G_tmp = Q @ vdiff
+                    Gp = vp + G_tmp + Psip
+                    Gn = vn - G_tmp + Psin
+
                 # Gp = G_temp + Psip - cos_temp 
                 # Gn = -G_temp + Psin + cos_temp
 
-                Gp = G_temp + Psip 
-                Gn = -G_temp + Psin 
+                 
 
                 ##### RESET #####
                 # if iter >= 100000:
@@ -743,8 +756,8 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                 Psip = np.zeros((arg_list['NUM_NEURON'], 1)).astype(np.float16)
                 Psin = np.zeros((arg_list['NUM_NEURON'], 1)).astype(np.float16)
 
-                vp = vp - arg_list['TAU'] * (vp + np.sign(Gp) * arg_list['VMAX'])
-                vn = vn - arg_list['TAU'] * (vn + np.sign(Gn) * arg_list['VMAX'])
+                vp = vp - tau * (vp + np.sign(Gp) * arg_list['VMAX'])
+                vn = vn - tau * (vn + np.sign(Gn) * arg_list['VMAX'])
 
                 Psip[vp > arg_list['VTH']] = arg_list['C']
                 Psin[vn > arg_list['VTH']] = arg_list['C']
@@ -759,9 +772,9 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                     # print("max cut: %d, number converged: %d" %(num_maxcut, num_converged))
                 # time.sleep(0.1)
             elif np.char.equal(mode, 'normal'):
-
-                Gp = vp - I + Q @ (vp-vn) + Psip 
-                Gn = vn + I - Q @ (vp-vn) + Psin 
+                Qv = Q @ (vp-vn)
+                Gp = vp - I + Qv + Psip 
+                Gn = vn + I - Qv + Psin 
                 
                 Psip = np.zeros((arg_list['NUM_NEURON'], 1)).astype(np.float16)
                 Psin = np.zeros((arg_list['NUM_NEURON'], 1)).astype(np.float16)
