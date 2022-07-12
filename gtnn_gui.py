@@ -640,8 +640,8 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                 # energy_window[iter] = np.sum(e_temp)/arg_list['NUM_NEURON']
                 energy_window.append(np.sum(e_temp)/arg_list['NUM_NEURON'])
             else:
-                e_temp = 0.5*vp*vp - (I - (Q*M)@(vp-vn))*vp + Psip*vp + \
-                         0.5*vn*vn + (I - (Q*M)@(vp-vn))*vn + Psin*vn
+                e_temp = 0.5*vp*vp - (I - (Q*M)@(vp-vn))*vp + Psip + \
+                         0.5*vn*vn + (I - (Q*M)@(vp-vn))*vn + Psin
                 # energy_window[iter%1000] = np.sum(e_temp)/arg_list['NUM_NEURON']
                 # self.energy_plot.addData(np.sum(energy_window)/100)
                 energy_window.pop(0)
