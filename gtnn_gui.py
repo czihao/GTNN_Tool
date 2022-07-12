@@ -177,7 +177,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.input_file = QLineEdit(self)
         # MODE: "random", "user file", "zero"
         self._dropdown_Iformat = QComboBox(self)
-        self._dropdown_Iformat.addItems(["random", "user file", "zero"])
+        self._dropdown_Iformat.addItems(["zero", "random", "user file"])
         self._dropdown_Iformat.setCurrentIndex(0)
         self._dropdown_Iformat.currentTextChanged.connect(self.init_I)
         
