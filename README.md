@@ -6,7 +6,9 @@ FIRST RELEASE SUPPOSED TO HAVE ROUTING AND NORMAL MODE, STILL WORKING ON ROUTING
 Multiple pre-defined modes aiming to solve different optimization problem will be added in future releases.  
 ## Installation
 Run installation script **install.sh** in the cloned repository  
-`$ ./install.sh`
+`$ ./install.sh`  
+After the required packages have been installed, then launch the GUI prgram by  
+`$ ./gtnn_gui.py`
 ## GUI Interface
 ![GUI](/figures/fig_gui.png)
 ## Membrane Potential Probe
