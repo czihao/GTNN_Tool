@@ -10,4 +10,5 @@ Run installation script **install.sh** in the cloned repository
 ## GUI Interface
 ![GUI](/figures/fig_gui.png)
 ## Membrane Potential Probe
-The probes provide real-time visualization of membrane potential updates for up to 5 different neurons. 
+The probes provide real-time visualization of membrane potential updates for up to 5 different neurons. The probes take on indices from the user and display the real-time membrane potential update of the neurons specified by the incdices to the left of the membrane potential plot.  
+## 
