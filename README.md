@@ -16,12 +16,18 @@ The probes provide real-time visualization of membrane potential updates for up 
 ## Energy Plot
 This real-time energy plot monitors the power consumption of the entire network in arb. unit.
 ## Neural Model Parameters
-User can configure the dynamics of the individual neuron through this panel. In the first release, the MODE dropbox contains 2 pre-defined mode, normal growth transform update rule and tweaked update rule for routing problem specifically. RIGHT NOW ONLY NORMAL IS READY, ROUTING STILL NEED TO BE FIGURED OUT.
+User can configure the dynamics of the individual neuron through this panel. In the first release, the MODE dropbox contains 2 pre-defined mode, normal growth transform update rule and tweaked update rule for routing problem specifically, and the number of neurons should be kept below 100,000. RIGHT NOW ONLY NORMAL IS READY, ROUTING STILL NEED TO BE FIGURED OUT.
 ## Input Parameters
 The GTNN_tool currently supports three modes of inputs: random, user file, and zero. Under random mode, one random input is generated for each neuron. The user can also specify a file that contains a N-by-1 array that represents inputs for each of the N neurons. 
 ## Neural Network Connectivity Parameters
 5 modes have been implemented to generate different neural connectivity graphs. Random identity and random feedforward modes take three parameters: overall density value, number of recip, and btwn layer overlap %.  
- - **overall density value** 
- - **number of recip**
- - **btwn layer overlap**
+ - **overall density value** This parameter dictates the number of layers (1/overall density) of the neural network. It is recommended to have less than 0.01% for networks that have more than 50,000 neurons. 
+ - **number of recip** This parameter determines the number of reciprocal connections of the neural network.  
+ - **btwn layer overlap** This parameter determines the percentage of overlap between layers in the network.
+Identity and feedforward modes take 3 parameter: recip format file, layer format file, and btwn layer overlap %
+ - **recip format file** This parameter reads a user defined file that contains the ((row, col), data) of all the reciprocal connection in the file.  
+ - **layer format file** This parameter reads a user defined file that contains the (number of neuron, layer density) for each layer of the neural network.  
+ - **btwn layer overlap** This parameter determines the percentage of overlap between layers in the network.
+User data mode takes 1 parameter that reads the entire connectivity graph of the neural network in ((row, col), data) format.
+
 
