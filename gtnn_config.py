@@ -1,27 +1,25 @@
-NUM_NEURON = 0
-USER_DATA = 6
-VMAX = 1
-DT = 2
-TMAX = 3
-TAU = 4
-ETA = 5
-LAMBDA = 7
-VTH = 8
-C = 9
-INPUT_FILE = 10
-
-# arg_list = []
-
-# arg_list.insert(NUM_NEURON, 800)
-# arg_list.insert(VMAX, 1)
-# arg_list.insert(DT, 0.001)
-# arg_list.insert(TMAX, 10)
-# arg_list.insert(TAU, 0.1)
-# arg_list.insert(ETA, 0.1)
-# arg_list.insert(USER_DATA, "G14_1.txt")
-# arg_list.insert(LAMBDA, 5)
-# arg_list.insert(VTH, 0)
-# arg_list.insert(C, 1)
+#  Washington University hereby grants to you a non-transferable,
+#  non-exclusive, royalty-free, non-commercial, research license to use and
+#  copy the computer code provided here (the �Software�).  You agree to
+#  include this license and the above copyright notice in all copies of the
+#  Software.  The Software may not be distributed, shared, or transferred to
+#  any third party.  This license does not grant any rights or licenses to
+#  any other patents, copyrights, or other forms of intellectual property
+#  owned or controlled by Washington University.  If interested in obtaining
+#  a commercial license, please contact Washington University's Office of
+#  Technology Management (otm@dom.wustl.edu).
+ 
+#  YOU AGREE THAT THE SOFTWARE PROVIDED HEREUNDER IS EXPERIMENTAL AND IS
+#  PROVIDED �AS IS�, WITHOUT ANY WARRANTY OF ANY KIND, EXPRESSED OR IMPLIED,
+#  INCLUDING WITHOUT LIMITATION WARRANTIES OF MERCHANTABILITY OR FITNESS FOR
+#  ANY PARTICULAR PURPOSE, OR NON-INFRINGEMENT OF ANY THIRD-PARTY PATENT,
+#  COPYRIGHT, OR ANY OTHER THIRD-PARTY RIGHT.  IN NO EVENT SHALL THE
+#  CREATORS OF THE SOFTWARE OR WASHINGTON UNIVERSITY BE LIABLE FOR ANY
+#  DIRECT, INDIRECT, SPECIAL, OR CONSEQUENTIAL DAMAGES ARISING OUT OF OR IN
+#  ANY WAY CONNECTED WITH THE SOFTWARE, THE USE OF THE SOFTWARE, OR THIS
+#  AGREEMENT, WHETHER IN BREACH OF CONTRACT, TORT OR OTHERWISE, EVEN IF SUCH
+#  PARTY IS ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. YOU ALSO AGREE THAT
+#  THIS SOFTWARE WILL NOT BE USED FOR CLINICAL PURPOSES.
 
 arg_list = {
     'NUM_NEURON' : 800,
@@ -41,16 +39,3 @@ arg_list = {
     'NUM_RECIP' : 6,
     'OVERLAP' : 0
 }
-
-# def modify_args(user_args):
-#     global arg_list
-#     arg_list[NUM_NEURON] = user_args[NUM_NEURON]
-#     arg_list[VMAX] = user_args[VMAX]
-#     arg_list[DT] = user_args[DT]
-#     arg_list[TMAX] = user_args[TMAX]
-#     arg_list[TAU] = user_args[TAU]
-#     arg_list[ETA] = user_args[ETA]
-#     arg_list[USER_DATA] = user_args[USER_DATA]
-#     arg_list[LAMBDA] = user_args[LAMBDA]
-#     arg_list[VTH] = user_args[VTH]
-#     arg_list[C] = user_args[C]

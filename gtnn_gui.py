@@ -1,4 +1,26 @@
-from re import S
+#  Washington University hereby grants to you a non-transferable,
+#  non-exclusive, royalty-free, non-commercial, research license to use and
+#  copy the computer code provided here (the �Software�).  You agree to
+#  include this license and the above copyright notice in all copies of the
+#  Software.  The Software may not be distributed, shared, or transferred to
+#  any third party.  This license does not grant any rights or licenses to
+#  any other patents, copyrights, or other forms of intellectual property
+#  owned or controlled by Washington University.  If interested in obtaining
+#  a commercial license, please contact Washington University's Office of
+#  Technology Management (otm@dom.wustl.edu).
+ 
+#  YOU AGREE THAT THE SOFTWARE PROVIDED HEREUNDER IS EXPERIMENTAL AND IS
+#  PROVIDED �AS IS�, WITHOUT ANY WARRANTY OF ANY KIND, EXPRESSED OR IMPLIED,
+#  INCLUDING WITHOUT LIMITATION WARRANTIES OF MERCHANTABILITY OR FITNESS FOR
+#  ANY PARTICULAR PURPOSE, OR NON-INFRINGEMENT OF ANY THIRD-PARTY PATENT,
+#  COPYRIGHT, OR ANY OTHER THIRD-PARTY RIGHT.  IN NO EVENT SHALL THE
+#  CREATORS OF THE SOFTWARE OR WASHINGTON UNIVERSITY BE LIABLE FOR ANY
+#  DIRECT, INDIRECT, SPECIAL, OR CONSEQUENTIAL DAMAGES ARISING OUT OF OR IN
+#  ANY WAY CONNECTED WITH THE SOFTWARE, THE USE OF THE SOFTWARE, OR THIS
+#  AGREEMENT, WHETHER IN BREACH OF CONTRACT, TORT OR OTHERWISE, EVEN IF SUCH
+#  PARTY IS ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. YOU ALSO AGREE THAT
+#  THIS SOFTWARE WILL NOT BE USED FOR CLINICAL PURPOSES.
+
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QLineEdit, QComboBox, QLabel, QPlainTextEdit, QInputDialog, QSlider
@@ -7,16 +29,12 @@ import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.animation import TimedAnimation
 from matplotlib.lines import Line2D
-# from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 import time
 import threading
 import matplotlib
-from scipy.sparse import csr_matrix, vstack, block_diag, coo_matrix
-
+from scipy.sparse import coo_matrix
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas, NavigationToolbar2QT as NavigationToolbar
-
 import gtnn_functions as gtnn
-import gtnn_config
 from gtnn_config import arg_list
 
 
