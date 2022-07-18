@@ -147,6 +147,16 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         setCustomSize(self.startBtn, 100, 50)
         self.startBtn.clicked.connect(self.startBtnAction)
 
+        self.learnFlag = 0
+        self.learnBtn = QtWidgets.QPushButton(text='learn')
+        setCustomSize(self.learnBtn, 100, 50)
+        self.learnBtn.clicked.connect(self.learnAction)
+        
+        self.stopLearnBtn = QtWidgets.QPushButton(text='stop learn')
+        setCustomSize(self.stopLearnBtn, 100, 50)
+        self.stopLearnBtn.clicked.connect(self.learnAction)
+        self.stopLearnBtn.hide()
+
         self._dropdown_updateMode = QComboBox(self)
         self._dropdown_updateMode.addItems(["routing", "combinatorial", "normal"])
         self._dropdown_updateMode.setCurrentIndex(0)
@@ -164,6 +174,8 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.config_param_layout.addWidget(self.startBtn, 1, 0)
         self.config_param_layout.addWidget(self._dropdown_updateMode, 2, 0)
         self.config_param_layout.addWidget(self._slider_speed, 3, 0)
+        self.config_param_layout.addWidget(self.learnBtn, 4, 0)
+        self.config_param_layout.addWidget(self.stopLearnBtn, 4, 0)
         
         self.config_param_layout.addWidget(self._param_dt, 1, 1)
         self.config_param_layout.addWidget(self._param_tau, 3, 1)
@@ -428,6 +440,21 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         self.outer_layout.addLayout(self.config_layout, 1, 0)
 
         self.show()
+    
+    def learnAction(self):
+        print(self.learnFlag)
+        if self.learnFlag == 1:
+            self.learnFlag = 0
+            self.learnBtn.show()
+            self.stopLearnBtn.hide()
+            return
+        elif self.learnFlag == 0:
+            self.learnFlag = 1
+            self.stopLearnBtn.show()
+            self.learnBtn.hide()
+            return
+        
+
 
     def startBtnAction(self):
         self.myGTNN.start()
@@ -600,6 +627,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             arg_list['QFILE'] = str(self._Q_file.text())
 
         Q = gtnn.generateQ(mode)
+        
         # print(Q)
         norm = matplotlib.colors.Normalize()
         Q_temp = Q.tocsr()
@@ -629,6 +657,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
         M_row = M_col
         M_data = np.ones((arg_list['NUM_NEURON']), dtype=np.uint)
         M = coo_matrix((M_data, (M_row, M_col)))
+        Mask = np.logical_not(np.eye(arg_list['NUM_NEURON']))
         energy_window = []
 
         vp, vn = gtnn.generateV('rand')
@@ -806,7 +835,10 @@ class CustomMainWindow(QtWidgets.QMainWindow):
                 Psin[vn > arg_list['VTH']] = arg_list['C']
                 vp[vp > arg_list['VTH']] = arg_list['VTH']
                 vn[vn > arg_list['VTH']] = arg_list['VTH']
-            
+                if self.learnFlag == 1:
+                    Q = gtnn.adapt_Q(iter, Q, Psip, Psin, vp, vn, Mask)
+                    Q = coo_matrix(Q)
+
             iter += 1
             
         
